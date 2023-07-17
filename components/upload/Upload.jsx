@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 
-function Upload({rebuildTxt,rebuildImg}) {
+function Upload({rebuildTxt}) {
   
   const [file, setFile] = useState();
 

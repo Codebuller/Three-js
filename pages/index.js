@@ -6,8 +6,9 @@ import { SketchPicker } from "react-color";
 import PickColor from "../components/pickColor/PickColor";
 import Upload from "../components/upload/Upload";
 export default function Home() {
+  const scene = new THREE.Scene();
   let color = 16777215;
-  const objects = [];
+  let objects = [];
   let fileObjects = [];
   let isShiftDown = false;
   const [res,setRes] = useState(false)
@@ -19,10 +20,9 @@ export default function Home() {
    
   }
   const reset = () =>{
-    var parentElement = document.body;
-    var theFirstChild = parentElement.firstChild;
-    document.body.removeChild(theFirstChild); 
-    setRes(!res);
+    objects.map((obj)=>{scene.remove(obj)})
+    objects = objects.slice(0,1)
+    console.log(objects)
   }
   
   const createAndDownloadTxt = () =>
@@ -74,46 +74,46 @@ export default function Home() {
       console.log(reader.error);
     };
   };
-  async function  rebuildImg(file){
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var img = new Image();
-      img.onload = function() {
-        var canvas = document.createElement("canvas");
-        var ctx = canvas.getContext("2d");
-        canvas.width = img.width;
-        canvas.height = img.height;
-        document.body.appendChild(canvas); // Добавляем созданный канвас в DOM
-        ctx.drawImage(img, 0, 0);
-        var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        var pixels = imageData.data;
-        let i = 0;
-        let result = []; 
-          for(let x = 0 ;x<canvas.width;++x)
-            for(let y = 0;y<canvas.height;++y){
-          var red = pixels[i];
-          var green = pixels[i + 1];
-          var blue = pixels[i + 2];
-          var alpha = pixels[i + 3];
-          let r = red.toString(16).length===1 ? "0" + red.toString(16) : red.toString(16);
-          let g = green.toString(16).length===1 ? "0" + green.toString(16) : green.toString(16);
-          let b = blue.toString(16).length===1 ? "0" + blue.toString(16) : blue.toString(16);
-          let col = new THREE.Color('#'+r+g+b);
-          const material = new THREE.MeshLambertMaterial( { color: col } );
-          const cube = new THREE.BoxGeometry( 50, 50, 50 );
-          let obj = new THREE.Mesh( cube, material );
-          obj.position.set(x*50,0,y*50);
-          result.push( obj);
-                  obj = null;
-          i+=4;
-            }
-            fileObjects = result;
-        document.body.removeChild(canvas); 
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
+  // async function  rebuildImg(file){
+  //   var reader = new FileReader();
+  //   reader.onload = function(e) {
+  //     var img = new Image();
+  //     img.onload = function() {
+  //       var canvas = document.createElement("canvas");
+  //       var ctx = canvas.getContext("2d");
+  //       canvas.width = img.width;
+  //       canvas.height = img.height;
+  //       document.body.appendChild(canvas); // Добавляем созданный канвас в DOM
+  //       ctx.drawImage(img, 0, 0);
+  //       var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  //       var pixels = imageData.data;
+  //       let i = 0;
+  //       let result = []; 
+  //         for(let x = 0 ;x<canvas.width;++x)
+  //           for(let y = 0;y<canvas.height;++y){
+  //         var red = pixels[i];
+  //         var green = pixels[i + 1];
+  //         var blue = pixels[i + 2];
+  //         var alpha = pixels[i + 3];
+  //         let r = red.toString(16).length===1 ? "0" + red.toString(16) : red.toString(16);
+  //         let g = green.toString(16).length===1 ? "0" + green.toString(16) : green.toString(16);
+  //         let b = blue.toString(16).length===1 ? "0" + blue.toString(16) : blue.toString(16);
+  //         let col = new THREE.Color('#'+r+g+b);
+  //         const material = new THREE.MeshLambertMaterial( { color: col } );
+  //         const cube = new THREE.BoxGeometry( 50, 50, 50 );
+  //         let obj = new THREE.Mesh( cube, material );
+  //         obj.position.set(x*50,0,y*50);
+  //         result.push( obj);
+  //                 obj = null;
+  //         i+=4;
+  //           }
+  //           fileObjects = result;
+  //       document.body.removeChild(canvas); 
+  //     };
+  //     img.src = e.target.result;
+  //   };
+  //   reader.readAsDataURL(file);
+  // }
 
   
   useEffect(() => {
@@ -121,7 +121,7 @@ export default function Home() {
     
     var theFirstChild = parentElement.firstChild;
     if(parentElement.firstChild.nodeName !== "CANVAS"){
-    const scene = new THREE.Scene();
+    
     setInterval(()=>{
       if(fileObjects.length!==0)
       {
@@ -279,19 +279,18 @@ export default function Home() {
       </div>
     
     <div  style={{position:"absolute",top:"2vmax",right:"2vmax",overflow:"hidden"}}>
-    {/* <button onClick={()=>{reset()}}>Reset</button>   */}
-    {/* Fix:
-    1)while you reset a canvas color changes to black 
-    2)ColorPicer must rerender
-    P.S.
-    I hope that you do +-UI)
-    */}
+    <button onClick={()=>{reset()}}>Reset</button>  
+    
     <h4>Shift - delete vox</h4>
-    <div style={{display:"flex", alignItems: "center",justifyСontent: "center"}}>
-      <h3 style={{height:"2vmax",marginRight:"1vmax"}}>Save</h3>
-    <button  style={{height:"2vmax"}} onClick={()=>{createAndDownloadTxt()}}>download file</button>
-    </div>
-       <Upload rebuildTxt={rebuildTxt} rebuildImg={rebuildImg}/>
+  
+        <div style={{display:"flex", alignItems: "center",justifyСontent: "center"}}>
+           <h3 style={{height:"2vmax",marginRight:"1vmax"}}>Save</h3>
+           <button  style={{height:"2vmax"}} onClick={()=>{createAndDownloadTxt()}}>download file</button>
+      </div>
+      :
+      <></>
+     
+       <Upload rebuildTxt={rebuildTxt} />
     </div>
    
       </>
