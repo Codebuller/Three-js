@@ -287,8 +287,6 @@ export default function Home() {
            <h3 style={{height:"2vmax",marginRight:"1vmax"}}>Save</h3>
            <button  style={{height:"2vmax"}} onClick={()=>{createAndDownloadTxt()}}>download file</button>
       </div>
-      :
-      <></>
      
        <Upload rebuildTxt={rebuildTxt} />
     </div>
